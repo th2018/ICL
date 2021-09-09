@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-https://idfg.idaho.gov/ifwis/fishingplanner/water/1145378426334
+In streams, Rainbow Trout prefer water temperatures similar to those favored by Brown Trout, from 54°F to 66°F, while lake-dwellers select waters between 45°F and 64°F. The maximum tolerable water temperature is 77°F, but some populations may be able to withstand temperatures in the low eighties for short periods of time.
 
 ```{r  , warning=FALSE, echo=FALSE, include=FALSE }
 #install.packages("tidyverse")
@@ -20,53 +20,8 @@ library(baseflow)
 library("EcoHydRology")
 ```
 
-<!-- ```{r} -->
-<!-- c<-read.csv("2506773.csv") -->
-<!-- c<-c[!is.na(c$PRCP),] -->
-<!-- head(c) -->
-<!-- c$NAME -->
-
-<!-- c$NAME<-as.character(c$NAME ) -->
-<!-- c<-c[ c$NAME=="PELTON DAM, OR US",] -->
-<!-- str(c) -->
-
-<!-- c$DATE<-as.character(c$DATE) -->
-<!-- c$DATE<-as.POSIXct(as.character(c$DATE), format="%Y-%m-%d") -->
-<!-- head(c) -->
-<!-- c$wyr<-0 -->
-
-<!-- c[c$DATE>= as.POSIXct("2009-10-01" , format="%Y-%m-%d") & c$DATE< as.POSIXct("2010-10-01" , format="%Y-%m-%d") ,]$wyr<-2010 -->
-<!-- c[c$DATE>= as.POSIXct("2010-10-01" , format="%Y-%m-%d") & c$DATE< as.POSIXct("2011-10-01" , format="%Y-%m-%d") ,]$wyr<-2011 -->
-<!-- c[c$DATE>= as.POSIXct("2011-10-01" , format="%Y-%m-%d") & c$DATE< as.POSIXct("2012-10-01" , format="%Y-%m-%d") ,]$wyr<-2012 -->
-<!-- c[c$DATE>= as.POSIXct("2012-10-01" , format="%Y-%m-%d") & c$DATE< as.POSIXct("2013-10-01" , format="%Y-%m-%d") ,]$wyr<-2013 -->
-<!-- c[c$DATE>= as.POSIXct("2013-10-01" , format="%Y-%m-%d") & c$DATE< as.POSIXct("2014-10-01" , format="%Y-%m-%d") ,]$wyr<-2014 -->
-
-<!-- c$wyr <-as.factor(c$wyr ) -->
-
-<!-- max_rain<-aggregate( c$PRCP ,list( c$wyr ),max)  -->
-<!-- max_rain -->
-
-<!-- mean_rain<-aggregate( c$PRCP ,list( c$wyr ),mean)  -->
-<!-- mean_rain -->
-
-<!-- #mean_rain<-aggregate( c$PRCP ,list( c$wy ),mean)  #in millimeters to tenths. -->
-<!-- #colnames(mean_rain)<-c("wyr","mean_rain") -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- hist(c$PRCP) -->
-<!-- hist(c[c$wyr==2013,]$PRCP) -->
-<!-- hist(c[c$wyr==2014,]$PRCP) -->
-
-<!-- plot(c[c$wyr==2011,]$DATE,c[c$wyr==2011,]$PRCP) -->
-<!-- plot(c[c$wyr==2013,]$DATE,c[c$wyr==2013,]$PRCP) -->
-<!-- plot(c[c$wyr==2014,]$DATE,c[c$wyr==2014,]$PRCP) -->
-<!-- ``` -->
-
-
 ```{r}
-siteNumber <- "13092747" 
+siteNumber <- "13296000" 
 ChoptankInfo <- readNWISsite(siteNumber)
 #ChoptankInfo
 parameterCd <- "00060"
@@ -86,14 +41,14 @@ ggplot(data=summerQ,aes(x=yr, y=X_00060_00003   ))+geom_boxplot()+ scale_y_log10
 ```
 
 ```{r}
-
-siteNumber <- "13092747" 
 ChoptankInfo <- readNWISsite(siteNumber)
 #ChoptankInfo
 parameterCd <- "00010"
 ChoptankInfo
 
 ```
+
+#https://idfg.idaho.gov/ifwis/fishingPlanner/water/1147337442696
 
 ```{r}
 allT <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
@@ -102,17 +57,10 @@ allT$mo<-as.numeric(format(allT$Date, format = "%m"))
 summerT<-allT[allT$mo %in% c(6,7,8),]
 head(summerT)
 
-
-
+#summerT$abv66<-0
+#summerT[summerT$X_00010_00003 > (66-32)*5/9 ,]$abv66<-1
+#abv66<-aggregate(summerT[,c("X_00010_00003","yr")],list=c("X_00010_00003"),FUN=mean())
 ```
-
-```{r}
-summerT$abv66<-0
-summerT[summerT$X_00010_00003 > (66-32)*5/9 ,]$abv66<-1
-abv66<-aggregate(summerT$abv66~summerT$yr ,FUN=sum)
-abv66
-```
-
 
 ```{r}
 ggplot(data=summerT,aes(x=yr, y=X_00010_00003   ))+ geom_boxplot()+ggtitle(ChoptankInfo$station_nm) + ylab("Stream temperature (degrees Celsius)") + xlab("Year")
@@ -120,7 +68,8 @@ ggplot(data=summerT,aes(x=yr, y=X_00010_00003   ))+ geom_boxplot()+ggtitle(Chopt
 summerT$yr<- as.integer(summerT$yr) 
 ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")
 
-ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")+geom_hline(yintercept = (66-32)*5/9, colour = "red")
+ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")+geom_hline(yintercept = (66-32)*5/9)
+
 ```
 
 
