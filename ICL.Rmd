@@ -1,9 +1,11 @@
 ---
 title: "climate data online"
+author: "Tao Huang"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r}
+```{r  , warning=FALSE, echo=FALSE, include=FALSE }
 #install.packages("tidyverse")
 library("tidyverse")
 # install.packages("dataRetrieval")
@@ -68,6 +70,48 @@ ChoptankInfo <- readNWISsite(siteNumber)
 parameterCd <- "00060"
 ChoptankInfo
 ```
+
+```{r}
+allQ <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
+allQ$yr<- format(allQ$Date, format = "%Y") 
+allQ$mo<-as.numeric(format(allQ$Date, format = "%m"))
+summerQ<-allQ[allQ$mo %in% c(6,7,8),]
+head(summerQ)
+```
+
+```{r}
+ggplot(data=summerQ,aes(x=yr, y=X_00060_00003   ))+geom_boxplot()+ scale_y_log10()
+```
+
+```{r}
+
+siteNumber <- "13092747" 
+ChoptankInfo <- readNWISsite(siteNumber)
+#ChoptankInfo
+parameterCd <- "00010"
+ChoptankInfo
+
+```
+
+```{r}
+allT <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
+allT$yr<- format(allT$Date, format = "%Y") 
+allT$mo<-as.numeric(format(allT$Date, format = "%m"))
+summerT<-allT[allT$mo %in% c(6,7,8),]
+head(summerT)
+```
+
+```{r}
+ggplot(data=summerT,aes(x=yr, y=X_00010_00003   ))+ geom_boxplot()+ggtitle(ChoptankInfo$station_nm) + ylab("Stream temperature (degrees Celsius)") + xlab("Year")
+
+summerT$yr<- as.integer(summerT$yr) 
+ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")
+
+```
+
+
+
+
 
 ```{r}
 allQ <- readNWISdv(siteNumber,parameterCd,"1994-09-01","2021-09-06")
