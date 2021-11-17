@@ -20,108 +20,41 @@ library(baseflow)
 library("foreign")
 ```
 
-
-<!-- # get Q -->
-<!-- ```{r} -->
-<!-- siteNumber <- "13092747"  -->
-<!-- ChoptankInfo <- readNWISsite(siteNumber) -->
-<!-- #ChoptankInfo -->
-<!-- parameterCd <- "00060" -->
-<!-- ChoptankInfo -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- allQ <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03") -->
-<!-- allQ$yr<- format(allQ$Date, format = "%Y")  -->
-<!-- allQ$mo<-as.numeric(format(allQ$Date, format = "%m")) -->
-<!-- summerQ<-allQ[allQ$mo %in% c(6,7,8),] -->
-<!-- head(summerQ) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- ggplot(data=summerQ,aes(x=yr, y=X_00060_00003   ))+geom_boxplot()+ scale_y_log10() -->
-<!-- ``` -->
-
 ```{r}
 
-usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf")
+#usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf")
+
+usgs<-c( 12301933, 12413370)
 
 #12355347
-for (id in usgs$STAID) {
+for (id in usgs) {
+  #for (id in usgs$STAID) {
   siteNumber <- as.character(id) 
   parameterCd <- "00010"
- # ChoptankInfo <- readNWISsite(siteNumber)
-  statCd <- c("00001","00003")
-  startDate <- "2019-01-01"
-endDate <- "2021-05-01"
-#readNWISdv(siteNumber,parameterCd,"2019-10-01","2021-11-03",statCd )
-  allT <-   readNWISdv(siteNumber, parameterCd, 
+ ChoptankInfo <- readNWISsite(siteNumber)
+  statCd <- c("00003") # 00003	MEAN
+  startDate <- "2012-08-01"
+endDate <- "2021-11-01"
+meanT <-   readNWISdv(siteNumber, parameterCd, 
                                  startDate, endDate, statCd=statCd)
-  if (dim(allT)[1]>0){
- allT$yr<- format(allT$Date, format = "%Y") 
- allT$mo<-as.numeric(format(allT$Date, format = "%m"))
+  if (dim(meanT )[1]>0){
+meanT$yr<- format(meanT$Date, format = "%Y") 
+meanT$mo<-as.numeric(format(meanT$Date, format = "%m"))
+meanAugT<-meanT[meanT$mo==8,]
 }
 }
 
-
-#ChoptankInfo
-
-
-
-```
-
-```{r}
-siteNumber <- "01491000"
-parameterCd <- "00010"  # Temperature and discharge
-statCd <- c("00001","00003")  # Mean and maximum
-startDate <- "2012-01-01"
-endDate <- "2012-05-01"
-
-temperatureAndFlow <- readNWISdv(siteNumber, parameterCd, 
-        startDate, endDate, statCd=statCd)
-temperatureAndFlow
 ```
 
 
-```{r}
-
-siteNumber <- "12355347"
 
 
-
-parameterCd <- "00010"  # Temperature and discharge
-statCd <- c("00001","00003")  # Mean and maximum
-startDate <- "2012-01-01"
-endDate <- "2012-05-01"
-
-temperatureAndFlow <- readNWISdv(siteNumber, parameterCd, 
-        startDate, endDate, statCd=statCd)
-
-temperatureAndFlow
-```
 
 
 ```{r}
+ggplot(data=meanAugT,aes(x=yr, y=X_00010_00003   ))+ geom_boxplot()+ggtitle(" ") + ylab("Stream temperature (degrees Celsius)") + xlab("Year")
 
-summerT<-allT[allT$mo %in% c(6,7,8),]
-head(summerT)
-
-
-
-```
-
-```{r}
-summerT$abv66<-0
-summerT[summerT$X_00010_00003 > (66-32)*5/9 ,]$abv66<-1
-abv66<-aggregate(summerT$abv66~summerT$yr ,FUN=sum)
-abv66
-```
-
-
-```{r}
-ggplot(data=summerT,aes(x=yr, y=X_00010_00003   ))+ geom_boxplot()+ggtitle(ChoptankInfo$station_nm) + ylab("Stream temperature (degrees Celsius)") + xlab("Year")
-
-summerT$yr<- as.integer(summerT$yr) 
+#summerT$yr<- as.integer(summerT$yr) 
 ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")
 
 ggplot(data=summerT,aes(x=Date, y=X_00010_00003   ))+geom_point()+stat_smooth()+ggtitle(ChoptankInfo$station_nm)+ ylab("Stream temperature (degrees Celsius)") + xlab("Year")+geom_hline(yintercept = (66-32)*5/9, colour = "red")
