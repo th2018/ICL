@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-
+# load packages
 ```{r  , warning=FALSE, echo=FALSE, include=FALSE }
 #install.packages("tidyverse")
 library("tidyverse")
@@ -18,10 +18,13 @@ library("maptools")
 library(baseflow)
 #library("EcoHydRology")
 library("foreign")
+# install.packages("moments") 
+library("moments")
+library("EnvStats")
 ```
 
 ```{r}
-
+# read data
 usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf")
 
 meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",format="%Y-%m-%d"),X_00010_00003=0,    X_00010_00003_cd= "",yr="",mo=0 )
@@ -45,11 +48,53 @@ meanAugT_df <-rbind(meanAugT_df,meanAugT)
 }
 }
 
+# clean the data
+meanAugT_df<-meanAugT_df[-1,]
+meanAugT_df<-meanAugT_df[!meanAugT_df$site_no=="13185000" ,]
+
+save(meanAugT_df,file="meanAugT_df.Rdata")
+
 ```
 
 ```{r}
-meanAugT_df<-meanAugT_df[-1,]
+ for (id in  meanAugT_df$site_no) {
+   
+   if(  length(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003) >= (2021-2012+1)*31*0.9 ){
+     p<-  qplot( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003,
+      geom="histogram",
+      binwidth = 1,  
+      main =  paste(id, "skewness=", skewness( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003), ", Coefficient of Variation=", cv(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003))         , 
+      xlab = "Stream T",  
+      fill=I("blue")
+#,      col=I("red"), 
+#      alpha=I(.2),
+#      xlim=c(20,50)
+)
+     
+     
+     
+     png(paste(id,".png",sep=""))
 
+  print(p)
+
+   
+     dev.off()
+     
+ #    hist(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003, main=id,       xlab = "Stream T")
+   }
+   
+#  hist(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003)
+   
+   
+   
+ }
+
+```
+
+
+```{r}
+
+#mean of each site
 meanAugT_df_mean<-
 meanAugT_df %>%
   group_by(site_no) %>%
@@ -60,27 +105,30 @@ meanAugT_df_usgs<-merge(meanAugT_df_mean,usgs,by="site_no")
 ```
 
 ```{r}
+# wrong data
 meanAugT_df_usgs<-meanAugT_df_usgs[!meanAugT_df_usgs$site_no=="13185000",] 
 
-cor.test(meanAugT_df_usgs$S1_93_11,meanAugT_df_usgs$mean_T)
+cor<-cor.test(meanAugT_df_usgs$S1_93_11,meanAugT_df_usgs$mean_T)
 
 new_old_t<-meanAugT_df_usgs[,c("S1_93_11","mean_T")]
 
 t.test(new_old_t$S1_93_11,new_old_t$mean_T)
 
 old_t<-meanAugT_df_usgs[,c("site_no","S1_93_11" )]
-old_t$model<-"S1_93_11"
+old_t$model<-"NorWeST"
 colnames(old_t)<-c("site_no","t","model" )
 
 new_t<-meanAugT_df_usgs[,c("site_no","mean_T" )]
-new_t$model<-"mean_T"
+new_t$model<-"USGS (2012-2021)"
 colnames(new_t)<-c("site_no","t","model" )
 
 models<-rbind(old_t,new_t)
 
 
 
-ggplot(models, aes( model, t))+ geom_boxplot()
+ggplot(models, aes( model, t))+ geom_boxplot()+ 
+  ylab("Stream T")+
+  xlab(" ") 
 
 #plot(meanAugT_df_usgs$S1_93_11, meanAugT_df_usgs$mean_T)
 
@@ -93,7 +141,11 @@ ldf<-data.frame(x=l,y=l)
 
 ggplot() +
   geom_point(data=meanAugT_df_usgs, aes(x=S1_93_11, y=mean_T))+
-  geom_line( data=ldf , aes(x=x, y=y))
+  geom_line( data=ldf , aes(x=x, y=y))+
+  xlab("NorWeST") + 
+  ylab("USGS (2012-2021)") +
+  ggtitle(  paste(      "Mean August Temperature, correlation coefficient=", cor$estimate ))
+
 ```
 
 
