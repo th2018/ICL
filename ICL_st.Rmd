@@ -1,5 +1,5 @@
 ---
-title: "climate data online"
+title: " "
 author: "Tao Huang"
 date: "`r Sys.Date()`"
 output: html_document
@@ -10,7 +10,7 @@ output: html_document
 #install.packages("tidyverse")
 library("tidyverse")
 # install.packages("dataRetrieval")
-library(dataRetrieval)
+library("dataRetrieval")
 # install.packages("zoo") 
 library(zoo)
 library(raster)
@@ -25,8 +25,10 @@ library("EnvStats")
 
 ```{r}
 # read data
-usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf")
+usgs<-read.dbf("usgs_wt_ID_nearest.dbf")
+#usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf")
 
+#CREATE AN EMPTY DATA FRAME
 meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",format="%Y-%m-%d"),X_00010_00003=0,    X_00010_00003_cd= "",yr="",mo=0 )
 
 
@@ -57,8 +59,7 @@ save(meanAugT_df,file="meanAugT_df.Rdata")
 ```
 
 ```{r}
- for (id in  meanAugT_df$site_no) {
-   
+for (id in  meanAugT_df$site_no) {
    if(  length(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003) >= (2021-2012+1)*31*0.9 ){
      p<-  qplot( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003,
       geom="histogram",
@@ -70,9 +71,6 @@ save(meanAugT_df,file="meanAugT_df.Rdata")
 #      alpha=I(.2),
 #      xlim=c(20,50)
 )
-     
-     
-     
      png(paste(id,".png",sep=""))
 
   print(p)
@@ -84,9 +82,7 @@ save(meanAugT_df,file="meanAugT_df.Rdata")
    }
    
 #  hist(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003)
-   
-   
-   
+
  }
 
 ```
