@@ -33,13 +33,14 @@ meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",for
 
 
 #for (id in usgs) {
- for (id in usgs$STAID) {
-  siteNumber <- as.character(id) 
+for (id in usgs$STAID) {
+siteNumber <- as.character(id) 
   parameterCd <- "00010"
  ChoptankInfo <- readNWISsite(siteNumber)
   statCd <- c("00003") # 00003	MEAN
   startDate <- "2012-08-01"
 endDate <- "2021-11-01"
+#Imports data from NWIS web service.
 meanT <-   readNWISdv(siteNumber, parameterCd, 
                                  startDate, endDate, statCd=statCd)
   if (dim(meanT )[1]>0){
@@ -54,23 +55,25 @@ meanAugT_df <-rbind(meanAugT_df,meanAugT)
 meanAugT_df<-meanAugT_df[-1,]
 meanAugT_df<-meanAugT_df[!meanAugT_df$site_no=="13185000" ,]
 
-save(meanAugT_df,file="meanAugT_df.Rdata")
+#save(meanAugT_df,file="meanAugT_df.Rdata")
 
 ```
 
 ```{r}
 for (id in  meanAugT_df$site_no) {
-   if(  length(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003) >= (2021-2012+1)*31*0.9 ){
-     p<-  qplot( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003,
-      geom="histogram",
+  if(length(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003) >= (2021-2012+1)*31*0.9 ){
+    p<-  qplot(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003,
+               geom="histogram",
       binwidth = 1,  
-      main =  paste(id, "skewness=", skewness( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003), ", Coefficient of Variation=", cv(meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003))         , 
-      xlab = "Stream T",  
+      main =  paste("USGS",id, ", skewness=", round(  skewness( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003) , digits = 2), ", Coefficient of Variation=",  round(  cv( meanAugT_df[meanAugT_df$site_no==id,]$X_00010_00003))  )       , 
+      xlab = "Stream T (deg C)",  
       fill=I("blue")
 #,      col=I("red"), 
 #      alpha=I(.2),
 #      xlim=c(20,50)
-)
+)+
+    theme(text = element_text(size=12))
+    
      png(paste(id,".png",sep=""))
 
   print(p)
@@ -111,11 +114,11 @@ new_old_t<-meanAugT_df_usgs[,c("S1_93_11","mean_T")]
 t.test(new_old_t$S1_93_11,new_old_t$mean_T)
 
 old_t<-meanAugT_df_usgs[,c("site_no","S1_93_11" )]
-old_t$model<-"NorWeST"
+old_t$model<-"NorWeST predicted stream T for 1993-2011"
 colnames(old_t)<-c("site_no","t","model" )
 
 new_t<-meanAugT_df_usgs[,c("site_no","mean_T" )]
-new_t$model<-"USGS (2012-2021)"
+new_t$model<-"USGS observed stream T for 2012-2021"
 colnames(new_t)<-c("site_no","t","model" )
 
 models<-rbind(old_t,new_t)
@@ -123,8 +126,9 @@ models<-rbind(old_t,new_t)
 
 
 ggplot(models, aes( model, t))+ geom_boxplot()+ 
-  ylab("Stream T")+
-  xlab(" ") 
+  ylab("Stream T (deg C)")+
+  xlab(" ") +
+    theme(text = element_text(size=14))
 
 #plot(meanAugT_df_usgs$S1_93_11, meanAugT_df_usgs$mean_T)
 
@@ -138,9 +142,10 @@ ldf<-data.frame(x=l,y=l)
 ggplot() +
   geom_point(data=meanAugT_df_usgs, aes(x=S1_93_11, y=mean_T))+
   geom_line( data=ldf , aes(x=x, y=y))+
-  xlab("NorWeST") + 
-  ylab("USGS (2012-2021)") +
-  ggtitle(  paste(      "Mean August Temperature, correlation coefficient=", cor$estimate ))
+  xlab("NorWeST predicted stream T for 1993-2011 (deg C)") + 
+  ylab("USGS observed stream T for 2012-2021 (deg C)") +
+  ggtitle(  paste(    "Mean August Temperature, correlation coefficient=", round( cor$estimate , digits = 2)   ))+
+    theme(text = element_text(size=14))
 
 ```
 
@@ -329,31 +334,5 @@ asc9<-paste("PRISM_ppt_stable_4kmM3_",wyr,"09_asc.asc",sep="")
 }
 #save(df,file="C:/Users/taohuang/Documents/Tao/NWCC/NWCC/14092750_rain.Rdata")
 
-```
-
-```{r}
-load("14092750_rain.Rdata")
-```
-
-
-```{r}
-
-meanQ<-aggregate(allQ$X_00060_00003 ,list(allQ$wyr ),mean) #cubic feet per second (Mean)
-
-colnames(meanQ)<-c("wyr","Q")
-
-rq<- merge(meanQ, df,by.x="wyr",by.y="wyr")
-rq$rp<-rq$Q *(0.3048)^3*86400* 365/ (ChoptankInfo$drain_area_va *1.609*1.609*10^6)/ (rq$prcp /1000) 
-# ft^3/s*s/d*d/(mi^2* m/mi *m/mi)
-rq
-
-plot(rq$prcp,rq$Q)
-plot(rq$prcp,rq$rp)
-
-plot(rq[rq$wyr %in% c(2010:2014),]$prcp,rq[rq$wyr %in% c(2010:2014),]$Q)
-plot(rq[rq$wyr %in% c(2010:2014),]$prcp,rq[rq$wyr %in% c(2010:2014),]$rp)
-
-plot(rq[rq$wyr %in% c(2006:2011),]$prcp,rq[rq$wyr %in% c(2006:2011),]$rp)
-plot(rq[rq$wyr %in% c(2013:2018),]$prcp,rq[rq$wyr %in% c(2013:2018),]$rp)
 ```
 
