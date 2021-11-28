@@ -21,6 +21,7 @@ library("foreign")
 # install.packages("moments") 
 library("moments")
 library("EnvStats")
+library("rnoaa")
 ```
 
 # MAX 00001	MAXIMUM
@@ -59,10 +60,17 @@ meanAugT_df <-rbind(meanAugT_df,meanAugT)
 meanAugT_df<-meanAugT_df[-1,]
 meanAugT_df<-meanAugT_df[!meanAugT_df$site_no=="13185000" ,]
 
-
 save(meanAugT_df,file="maxQT_93_21_ID.Rdata")
 
 ```
+
+#weather data
+```{r}
+#To get a full and current list of stations
+stations <- ghcnd_stations()
+#save(stations,file="stations.Rdata")
+```
+
 
 ```{r}
 summary(complete.cases(meanAugT_df[,c("site_no","Date","X_00010_00001","X_00060_00003","yr","mo","ele" )]))
