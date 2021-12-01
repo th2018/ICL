@@ -27,7 +27,7 @@ library("rnoaa")
 # MAX 00001	MAXIMUM
 ```{r}
 # read data
-usgs<-read.csv("C:/Users/taohuang/Downloads/ICL-main(1)/ICL-main/wt_ID.csv") #DRAIN_SQKM
+usgs<-read.csv("wt_ID.csv") #DRAIN_SQKM
 
 meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",format="%Y-%m-%d"),X_00010_00001=0,X_00010_00003=0,    X_00010_00003_cd= "",X_00060_00003=0,    X_00060_00003_cd= "",yr="",mo=0,ele=0 )
 
@@ -52,6 +52,10 @@ meanT$yr<- format(meanT$Date, format = "%Y")
 meanT$mo<-as.numeric(format(meanT$Date, format = "%m"))
 meanAugT<-meanT[meanT$mo==8,c("agency_cd","site_no","Date","X_00010_00001","X_00010_00003","X_00010_00003_cd","X_00060_00003","X_00060_00003_cd","yr","mo"  )]
 meanAugT$ele<-ChoptankInfo$alt_va
+meanAugT$lat<-dec_lat_va
+  
+meanAugT$long<- dec_long_va
+
 meanAugT_df <-rbind(meanAugT_df,meanAugT)
 }
 }
@@ -63,6 +67,12 @@ meanAugT_df<-meanAugT_df[!meanAugT_df$site_no=="13185000" ,]
 save(meanAugT_df,file="maxQT_93_21_ID.Rdata")
 
 ```
+
+```{r}
+load("maxQT_93_21_ID.Rdata")
+head(meanAugT_df)
+```
+
 
 #weather data
 ```{r}
