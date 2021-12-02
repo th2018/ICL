@@ -69,8 +69,21 @@ save(meanAugT_df,file="maxQT_93_21_ID.Rdata")
 ```
 
 ```{r}
-load("maxQT_93_21_ID.Rdata")
+load("maxQT_93_21_ID.Rdata") #daily
 head(meanAugT_df)
+```
+
+#meanT for each site
+```{r}
+
+meanAugT_df_mean<-
+meanAugT_df %>%
+  group_by(site_no) %>%
+  summarize(mean_T=mean(X_00010_00003, na.rm = TRUE))
+
+write.csv(meanAugT_df_mean, file="meanAugT_df_mean.csv")
+
+  
 ```
 
 
@@ -104,7 +117,7 @@ summary(lm(meanAugT_df2$X_00010_00001~meanAugT_df2$X_00060_00003+meanAugT_df2$el
 
 ```{r}
 # read data
-usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/usgs_wt_ID_nearest.dbf") #DRAIN_SQKM
+usgs<-read.dbf("usgs_wt_ID_nearest.dbf") #DRAIN_SQKM
 
 meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",format="%Y-%m-%d"),X_00010_00003=0,    X_00010_00003_cd= "",X_00060_00003=0,    X_00060_00003_cd= "",yr="",mo=0 )
 
@@ -135,6 +148,11 @@ meanAugT_df$ele<-ChoptankInfo$alt_va
 save(meanAugT_df,file="meanQT_12_21.Rdata")
 
 ```
+
+```{r}
+load("meanQT_12_21.Rdata")
+```
+
 
 ```{r}
 summary(meanAugT_df)
