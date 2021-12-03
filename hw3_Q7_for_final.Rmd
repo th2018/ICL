@@ -29,7 +29,6 @@ library("pracma")
 library("nls2")
 ```
 
-
 ```{r}
 # read data
 usgs<-read.csv("wt_ID.csv")
@@ -51,7 +50,7 @@ meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",for
 endDate <- "2021-09-01"
 meanT <-   readNWISdv(siteNumber, parameterCd, 
                                  startDate, endDate, statCd=statCd)
-  if (dim(meanT )[2]>7){
+  if (dim(meanT )[2]>5){
 meanT$yr<- format(meanT$Date, format = "%Y") 
 meanT$mo<-as.numeric(format(meanT$Date, format = "%m"))
 meanAugT<-meanT[meanT$mo==8,c("agency_cd","site_no","Date","X_00010_00003","X_00010_00003_cd","X_00060_00003","X_00060_00003_cd","yr","mo"  )]
@@ -90,13 +89,20 @@ head(meanAugT_all)
 ```
 
 ```{r}
-plot(meanAugT_all$RASTERVALU,meanAugT_all$X_00010_00003)
-plot(meanAugT_all$X_00060_00003 ,meanAugT_all$X_00010_00003)
+colnames(meanAugT_all)<-c(colnames(meanAugT_all)[1:4],"Daily_Stream_T","X_00010_00003_cd", "Daily_Q", "X_00060_00003_cd" ,"mo"  ,             "ele"         ,     "Monthly_air_T"  )
+  
+
+plot(meanAugT_all$Daily_Q  ,meanAugT_all$Daily_Stream_T )
+
+plot(meanAugT_all$Monthly_air_T  ,meanAugT_all$Daily_Stream_T )
+
+plot(meanAugT_all$ele  ,meanAugT_all$Daily_Stream_T )
+
 ```
 
 
 ```{r}
-summary(lm(meanAugT_all$X_00010_00003~meanAugT_all$RASTERVALU+meanAugT_all$X_00060_00003+meanAugT_all$ele))
+summary(lm(meanAugT_all$Daily_Stream_T~meanAugT_all$Monthly_air_T+ meanAugT_all$Daily_Q+meanAugT_all$ele ))
 ```
 
 ```{r}
