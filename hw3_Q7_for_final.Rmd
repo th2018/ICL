@@ -1,5 +1,5 @@
 ---
-title: "hw3"
+title: " "
 author: "Tao Huang"
 date:  "`r Sys.Date()`"
 output: html_document
@@ -32,7 +32,11 @@ library("nls2")
 
 ```{r}
 # read data
-usgs<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/norwest/wt_ID.dbf") #DRAIN_SQKM
+usgs<-read.csv("wt_ID.csv")
+#usgs<-read.dbf("wt_ID.dbf") #DRAIN_SQKM
+
+usgs<-usgs[usgs$site_no<1e+08,]
+usgs$site_no<-as.character(usgs$site_no)
 
 meanAugT_df<-data.frame(agency_cd= " ",site_no="", Date=as.Date("2000-01-01",format="%Y-%m-%d"),X_00010_00003=0,    X_00010_00003_cd= "",X_00060_00003=0,    X_00060_00003_cd= "",yr="",mo=0 , ele=0)
 
@@ -60,7 +64,6 @@ print(Sys.time())
 # clean the data
 meanAugT_df<-meanAugT_df[-1,]
 meanAugT_df<-meanAugT_df[!meanAugT_df$site_no=="13185000" ,]
-
 
 save(meanAugT_df,file="meanQT_14_21.Rdata")
 
