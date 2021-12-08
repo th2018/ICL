@@ -5,6 +5,7 @@ date:  "`r Sys.Date()`"
 output: html_document
 ---
 
+#load the packages
 ```{r}
 #install.packages("tidyverse")
 library("tidyverse")
@@ -72,7 +73,6 @@ save(meanAugT_df,file="meanQT_14_21.Rdata")
 load("meanQT_14_21.Rdata")
 ```
 
-
 ```{r}
 setwd("C:/Users/taohuang/Documents/Tao/Data/PRISM")
 temp_all<-data.frame(STAID<-c("00"),yr<-c(0),RASTERVALU<-0)
@@ -110,13 +110,25 @@ head(meanAugT_all_mo)
 ```
 
 ```{r}
+g<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/gagesII_9322_point_shapefile/gagesII_9322_sept30_2011.dbf")
+g$STAID<-as.character(g$STAID)
+meanAugT_all_mo2<-merge(g,meanAugT_all_mo,by.x="STAID",by.y="site_no")
+meanAugT_all_mo2
+meanAugT_all_mo3<-meanAugT_all_mo2[meanAugT_all_mo2$CLASS=="Ref",]
+dim(meanAugT_all_mo3)
+```
+
+
+```{r}
 plot(meanAugT_all_mo$monthly_air_T, meanAugT_all_mo$monthly_stream_T)
+plot(meanAugT_all_mo3$monthly_air_T,meanAugT_all_mo3$monthly_stream_T)
 ```
 
 
 ```{r}
 summary(lm(meanAugT_all_mo$monthly_stream_T~ meanAugT_all_mo$monthly_stream_Q +meanAugT_all_mo$monthly_air_T+ meanAugT_all_mo$ele))
 
+summary(lm(meanAugT_all_mo3$monthly_stream_T~ meanAugT_all_mo3$monthly_stream_Q +meanAugT_all_mo3$monthly_air_T+ meanAugT_all_mo3$ele))
 ```
 
 
