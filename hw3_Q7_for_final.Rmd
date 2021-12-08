@@ -69,6 +69,11 @@ save(meanAugT_df,file="meanQT_14_21.Rdata")
 ```
 
 ```{r}
+load("meanQT_14_21.Rdata")
+```
+
+
+```{r}
 setwd("C:/Users/taohuang/Documents/Tao/Data/PRISM")
 temp_all<-data.frame(STAID<-c("00"),yr<-c(0),RASTERVALU<-0)
 colnames(temp_all)<-c("STAID","yr","RASTERVALU")
@@ -79,6 +84,7 @@ for (yr in c(2014:2020)) {
     temp_all<-rbind(temp_all,temp)
 }
 temp_all<-temp_all[-1,]
+head(temp_all)
 ```
 
 ```{r}
@@ -89,7 +95,33 @@ head(meanAugT_all)
 ```
 
 ```{r}
+save(meanAugT_all,file="meanAugT_all.Rdata")
+```
+
+#monthly air temp
+```{r}
 colnames(meanAugT_all)<-c(colnames(meanAugT_all)[1:4],"Daily_Stream_T","X_00010_00003_cd", "Daily_Q", "X_00060_00003_cd" ,"mo"  ,             "ele"         ,     "Monthly_air_T"  )
+
+meanAugT_all_mo<-meanAugT_all %>%
+  group_by(site_no  ,yr) %>%
+  summarise(monthly_stream_T = mean(Daily_Stream_T), monthly_stream_Q = mean(Daily_Q),ele= mean(ele), monthly_air_T=mean(Monthly_air_T) )
+
+head(meanAugT_all_mo)
+```
+
+```{r}
+plot(meanAugT_all_mo$monthly_air_T, meanAugT_all_mo$monthly_stream_T)
+```
+
+
+```{r}
+summary(lm(meanAugT_all_mo$monthly_stream_T~ meanAugT_all_mo$monthly_stream_Q +meanAugT_all_mo$monthly_air_T+ meanAugT_all_mo$ele))
+
+```
+
+
+```{r}
+
   
 
 plot(meanAugT_all$Daily_Q  ,meanAugT_all$Daily_Stream_T )
