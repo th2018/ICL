@@ -127,3 +127,27 @@ summary(lm(meanAugT_all_mo$monthly_stream_T~ meanAugT_all_mo$monthly_stream_Q +m
 summary(lm(meanAugT_all_mo3$monthly_stream_T~ meanAugT_all_mo3$monthly_stream_Q +meanAugT_all_mo3$monthly_air_T+ meanAugT_all_mo3$ele))
 ```
 
+
+```{r}
+set.seed(101)
+train = sample(1:nrow(meanAugT_all_mo),  nrow(meanAugT_all_mo)*0.9 )
+dim(meanAugT_all_mo)
+length(train)
+
+set.seed(101)
+train2 = sample(1:nrow(meanAugT_all_mo3),  nrow(meanAugT_all_mo3)*0.9 )
+dim(meanAugT_all_mo3)
+length(train2)
+
+```
+
+```{r}
+rf.stream_T = randomForest(monthly_stream_T ~ ele +monthly_stream_Q   +monthly_air_T , data = meanAugT_all_mo, subset = train)
+rf.stream_T
+rf.stream_T$importance
+
+rf.stream_T2 = randomForest(monthly_stream_T ~ ele +monthly_stream_Q   +monthly_air_T , data = meanAugT_all_mo3, subset = train2)
+rf.stream_T2
+rf.stream_T2$importance
+```
+
