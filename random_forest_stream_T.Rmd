@@ -171,6 +171,7 @@ length(train4)
 rf.stream_T = randomForest(monthly_stream_T ~ ele +monthly_stream_Q   +monthly_air_T , data = meanAugT_all_mo, subset = train)
 rf.stream_T
 rf.stream_T$importance
+randomForest::varImpPlot(rf.stream_T)
 
 rf.stream_T2 = randomForest(monthly_stream_T ~ ele +monthly_stream_Q   +monthly_air_T +CLASS , data = meanAugT_all_mo2, subset = train2)
 rf.stream_T2
