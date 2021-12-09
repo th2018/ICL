@@ -122,8 +122,6 @@ head(meanAugT_all_mo)
 #g<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/gagesII_9322_point_shapefile/gagesII_9322_sept30_2011.dbf")
 g<-read.dbf("/Users/owner/Downloads/gagesII_9322_point_shapefile 2/gagesII_9322_sept30_2011.dbf")
 
-
-
 g$STAID<-as.character(g$STAID)
 meanAugT_all_mo2<-merge(g,meanAugT_all_mo,by.x="STAID",by.y="site_no")
 meanAugT_all_mo2
@@ -147,23 +145,23 @@ summary(lm(meanAugT_all_mo3$monthly_stream_T~ meanAugT_all_mo3$monthly_stream_Q 
 
 ```{r}
 set.seed(101)
-train = sample(1:nrow(meanAugT_all_mo),  nrow(meanAugT_all_mo)*0.9 )
+train = sample(1:nrow(meanAugT_all_mo),  nrow(meanAugT_all_mo)*0.7 )
 dim(meanAugT_all_mo)
 length(train)
 
 set.seed(101)
-train2 = sample(1:nrow(meanAugT_all_mo2),  nrow(meanAugT_all_mo2)*0.9 )
+train2 = sample(1:nrow(meanAugT_all_mo2),  nrow(meanAugT_all_mo2)*0.7 )
 dim(meanAugT_all_mo2)
 length(train2)
 
 set.seed(101)
-train3 = sample(1:nrow(meanAugT_all_mo3),  nrow(meanAugT_all_mo3)*0.9 )
+train3 = sample(1:nrow(meanAugT_all_mo3),  nrow(meanAugT_all_mo3)*0.7 )
 dim(meanAugT_all_mo3)
 length(train3)
 
 
 set.seed(101)
-train4 = sample(1:nrow(meanAugT_all_mo4),  nrow(meanAugT_all_mo4)*0.9 )
+train4 = sample(1:nrow(meanAugT_all_mo4),  nrow(meanAugT_all_mo4)*0.7 )
 dim(meanAugT_all_mo4)
 length(train4)
 
@@ -191,8 +189,11 @@ rf.stream_T4$importance
 # Make prediction
 predictions <- predict(rf.stream_T, meanAugT_all_mo[-train,] )
 
-plot(meanAugT_all_mo[-train,]$monthly_stream_T,predictions,xlim=c(8,22) ,ylim=c(8,22), xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)")
+x=seq(1,30)
 
+plot(meanAugT_all_mo[-train,]$monthly_stream_T,predictions,xlim=c(8,22) ,ylim=c(8,22), xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)")
+par(new=T)
+plot(x,x,type="l",xlim=c(8,22) ,ylim=c(8,22),xlab="",ylab="")
 ```
 
 ```{r}
@@ -205,13 +206,20 @@ plot(meanAugT_all_mo2[-train2,]$monthly_stream_T,predictions2 ,xlim=c(8,22) ,yli
 ```{r}
 predictions3 <- predict(rf.stream_T3, meanAugT_all_mo3[-train3,] )
 
-plot(meanAugT_all_mo3[-train3,]$monthly_stream_T,predictions3 ,xlim=c(16,26) ,ylim=c(16,26) , xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)", main="No dam")
+plot(meanAugT_all_mo3[-train3,]$monthly_stream_T,predictions3 ,xlim=c(16,26) ,ylim=c(16,26) , xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)", main="No upstream reservoirs")
+
+par(new=T)
+plot(x,x,type="l" ,xlim=c(16,26) ,ylim=c(16,26) ,xlab="",ylab="")
 ```
 
 
 ```{r}
 predictions4 <- predict(rf.stream_T4, meanAugT_all_mo4[-train4,] )
 
-plot(meanAugT_all_mo4[-train4,]$monthly_stream_T,predictions4 ,xlim=c(16,22) ,ylim=c(16,22) , xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)" , main="Dam")
+plot(meanAugT_all_mo4[-train4,]$monthly_stream_T,predictions4 ,xlim=c(16,22) ,ylim=c(16,22) , xlab="Observed stream temperature (degC)", ylab="Predicted stream temperature (degC)" , main="With Upstream reservoirs")
+par(new=T)
+plot(x,x,type="l" ,xlim=c(16,22) ,ylim=c(16,22) ,xlab="",ylab="")
 ```
+
+
 
