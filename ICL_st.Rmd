@@ -124,8 +124,7 @@ colnames(new_t)<-c("site_no","t","model" )
 models<-rbind(old_t,new_t)
 
 
-
-ggplot(models, aes( model, t))+ geom_boxplot()+ 
+ggplot(models, aes( model, t))+ geom_boxplot(notch = TRUE)+ 
   ylab("Stream T (deg C)")+
   xlab(" ") +
     theme(text = element_text(size=14))
