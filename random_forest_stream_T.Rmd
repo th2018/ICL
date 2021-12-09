@@ -32,6 +32,10 @@ require("randomForest")
 ```
 
 ```{r}
+load("meanAugT_df.Rdata")
+```
+
+```{r}
 # read data
 usgs<-read.csv("wt_ID.csv")
 #usgs<-read.dbf("wt_ID.dbf") #DRAIN_SQKM
@@ -70,6 +74,10 @@ save(meanAugT_df,file="C:/Users/taohuang/Downloads/ICL-main/meanQT_12_21.Rdata")
 
 ```
 
+```{r}
+load("temp_all.Rdata")
+```
+
 # get the PRISM data
 ```{r}
 setwd("C:/Users/taohuang/Documents/Tao/Data/PRISM")
@@ -85,6 +93,11 @@ temp_all<-temp_all[-1,]
 head(temp_all)
 save(temp_all, file="C:/Users/taohuang/Downloads/ICL-main/temp_all.Rdata")
 ```
+
+```{r}
+load("meanAugT_all.Rdata")
+```
+
 
 ```{r}
 meanAugT_all<-merge(meanAugT_df,temp_all,by.x=c("site_no","yr"),by.y=c("STAID","yr"))
@@ -106,7 +119,11 @@ head(meanAugT_all_mo)
 ```
 
 ```{r}
-g<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/gagesII_9322_point_shapefile/gagesII_9322_sept30_2011.dbf")
+#g<-read.dbf("C:/Users/taohuang/Documents/Tao/Data/gagesII_9322_point_shapefile/gagesII_9322_sept30_2011.dbf")
+g<-read.dbf("/Users/owner/Downloads/gagesII_9322_point_shapefile 2/gagesII_9322_sept30_2011.dbf")
+
+
+
 g$STAID<-as.character(g$STAID)
 meanAugT_all_mo2<-merge(g,meanAugT_all_mo,by.x="STAID",by.y="site_no")
 meanAugT_all_mo2
