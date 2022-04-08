@@ -19,7 +19,9 @@ library("EcoHydRology")
 ```
 
 ```{r}
-siteNumber <- "13092747" 
+#siteNumber <- "13092747" 
+#USGS 13269000 SNAKE RIVER AT WEISER ID
+siteNumber <- "13269000" 
 ChoptankInfo <- readNWISsite(siteNumber)
 #ChoptankInfo
 parameterCd <- "00060" #Q
@@ -27,7 +29,8 @@ ChoptankInfo
 ```
 
 ```{r}
-allQ <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
+#allQ <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
+allQ <- readNWISdv(siteNumber,parameterCd,"2007-10-01","2015-09-30")
 allQ$yr<- format(allQ$Date, format = "%Y") 
 allQ$mo<-as.numeric(format(allQ$Date, format = "%m"))
 summerQ<-allQ[allQ$mo %in% c(6,7,8),]
@@ -41,8 +44,9 @@ ggplot(data=summerQ,aes(x=yr, y=X_00060_00003   ))+geom_boxplot()+ scale_y_log10
 ```
 
 ```{r}
-
 siteNumber <- "13092747" 
+#USGS 13269000 SNAKE RIVER AT WEISER ID
+#siteNumber <- "13269000" 
 ChoptankInfo <- readNWISsite(siteNumber)
 #ChoptankInfo
 parameterCd <- "00010"
@@ -51,7 +55,10 @@ ChoptankInfo
 ```
 
 ```{r}
+
 allT <- readNWISdv(siteNumber,parameterCd,"2012-10-01","2021-09-03")
+#allT <- readNWISdv(siteNumber,parameterCd,"2007-10-01","2015-09-30")
+
 allT$yr<- format(allT$Date, format = "%Y") 
 allT$mo<-as.numeric(format(allT$Date, format = "%m"))
 summerT<-allT[allT$mo %in% c(6,7,8,9),]
